@@ -18,28 +18,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: 8.0.x
     - name: Test
       run: dotnet test --verbosity normal
-
-  release_zip:
-    needs: verify
-    name: Release BaGet.zip to GitHub
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
-    - name: Publish
-      run: dotnet publish src/BaGet --configuration Release --output artifacts
-    - name: Upload
-      uses: actions/upload-artifact@v2
-      with:
-        name: BaGet
-        path: artifacts
 
   release_docker_image:
     needs: verify
