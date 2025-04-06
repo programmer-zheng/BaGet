@@ -2,6 +2,8 @@ using System;
 using BaGet.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using NuGet.Versioning;
 
 namespace BaGet.Web
@@ -11,11 +13,13 @@ namespace BaGet.Web
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly LinkGenerator _linkGenerator;
+        private readonly BaGetOptions _baGetOptions;
 
-        public BaGetUrlGenerator(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator)
+        public BaGetUrlGenerator(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator,IConfiguration configure)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+            _baGetOptions = configure.Get<BaGetOptions>();
         }
 
         public string GetServiceIndexUrl()
@@ -38,34 +42,38 @@ namespace BaGet.Web
 
         public string GetPackagePublishResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return AbsoluteUrl("api/v2/package");
+            /*return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.UploadPackageRouteName,
-                values: null);
+                values: null);*/
         }
 
         public string GetSymbolPublishResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
-                _httpContextAccessor.HttpContext,
-                Routes.UploadSymbolRouteName,
-                values: null);
+            return AbsoluteUrl("api/v2/symbol");
+            //return _linkGenerator.GetUriByRouteValues(
+            //    _httpContextAccessor.HttpContext,
+            //    Routes.UploadSymbolRouteName,
+            //    values: null);
         }
 
         public string GetSearchResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return AbsoluteUrl("v3/search");
+/*            return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.SearchRouteName,
-                values: null);
+                values: null);*/
         }
 
         public string GetAutocompleteResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return AbsoluteUrl("v3/autocomplete");
+            /*return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.AutocompleteRouteName,
-                values: null);
+                values: null);*/
         }
 
         public string GetRegistrationIndexUrl(string id)
@@ -152,7 +160,14 @@ namespace BaGet.Web
         private string AbsoluteUrl(string relativePath)
         {
             var request = _httpContextAccessor.HttpContext.Request;
-
+            if (!string.IsNullOrWhiteSpace(_baGetOptions.BaseUrl))
+            {
+                if (!_baGetOptions.BaseUrl.EndsWith("/"))
+                {
+                    return $"{_baGetOptions.BaseUrl}/{relativePath}";
+                }
+                return _baGetOptions.BaseUrl + relativePath;
+            }
             return string.Concat(
                 request.Scheme,
                 "://",

@@ -15,6 +15,8 @@ namespace BaGet.Core
         /// </summary>
         public string PathBase { get; set; }
 
+        public string BaseUrl { get; set; }
+
         /// <summary>
         /// If enabled, the database will be updated at app startup by running
         /// Entity Framework migrations. This is not recommended in production.
