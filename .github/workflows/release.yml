@@ -61,5 +61,5 @@ jobs:
         context: .
         push: true
         tags: |
-          loicsharma/baget:latest
-          loicsharma/baget:${{ github.event.inputs.releaseVersion }}
+          programmerzheng/baget:latest
+          programmerzheng/baget:${{ github.event.inputs.releaseVersion }}
