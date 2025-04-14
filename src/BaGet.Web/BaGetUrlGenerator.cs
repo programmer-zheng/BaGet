@@ -42,38 +42,34 @@ namespace BaGet.Web
 
         public string GetPackagePublishResourceUrl()
         {
-            return AbsoluteUrl("api/v2/package");
-            /*return _linkGenerator.GetUriByRouteValues(
+            return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.UploadPackageRouteName,
-                values: null);*/
+                values: null);
         }
 
         public string GetSymbolPublishResourceUrl()
         {
-            return AbsoluteUrl("api/v2/symbol");
-            //return _linkGenerator.GetUriByRouteValues(
-            //    _httpContextAccessor.HttpContext,
-            //    Routes.UploadSymbolRouteName,
-            //    values: null);
+            return _linkGenerator.GetUriByRouteValues(
+                _httpContextAccessor.HttpContext,
+                Routes.UploadSymbolRouteName,
+                values: null);
         }
 
         public string GetSearchResourceUrl()
         {
-            return AbsoluteUrl("v3/search");
-/*            return _linkGenerator.GetUriByRouteValues(
+            return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.SearchRouteName,
-                values: null);*/
+                values: null);
         }
 
         public string GetAutocompleteResourceUrl()
         {
-            return AbsoluteUrl("v3/autocomplete");
-            /*return _linkGenerator.GetUriByRouteValues(
+            return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.AutocompleteRouteName,
-                values: null);*/
+                values: null);
         }
 
         public string GetRegistrationIndexUrl(string id)
@@ -160,14 +156,6 @@ namespace BaGet.Web
         private string AbsoluteUrl(string relativePath)
         {
             var request = _httpContextAccessor.HttpContext.Request;
-            if (!string.IsNullOrWhiteSpace(_baGetOptions.BaseUrl))
-            {
-                if (!_baGetOptions.BaseUrl.EndsWith("/"))
-                {
-                    return $"{_baGetOptions.BaseUrl}/{relativePath}";
-                }
-                return _baGetOptions.BaseUrl + relativePath;
-            }
             return string.Concat(
                 request.Scheme,
                 "://",

@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using BaGet.Core;
 using BaGet.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
@@ -90,13 +92,26 @@ namespace BaGet
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
             }
-          /*  app.UseForwardedHeaders(new ForwardedHeadersOptions
+            /*  app.UseForwardedHeaders(new ForwardedHeadersOptions
+              {
+                  ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                             ForwardedHeaders.XForwardedProto |
+                             ForwardedHeaders.XForwardedHost
+              });*/
+            app.Use(async (context, next) =>
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor |
-                           ForwardedHeaders.XForwardedProto |
-                           ForwardedHeaders.XForwardedHost
-            });*/
+                if (!string.IsNullOrWhiteSpace(options.BaseUrl))
+                {
+                    context.Request.Host = new HostString(options.BaseUrl);
+                }
+                var forwardedProto = context.Request.Headers["X-Forwarded-Proto"].FirstOrDefault();
 
+                if (!string.IsNullOrWhiteSpace(forwardedProto))
+                {
+                    context.Request.Scheme = forwardedProto;
+                }
+                await next();
+            });
             app.UsePathBase(options.PathBase);
 
             app.UseStaticFiles();
